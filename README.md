@@ -69,6 +69,14 @@ This project helps to:
 
 ---
 
+## 🚀 How to Use
+1. Clone or download this repository  
+2. Open the `.pbip` file in Power BI Desktop  
+3. Ensure `Report` and `SemanticModel` folders are present  
+4. Refresh data if needed  
+
+---
+
 ## 🚀 Conclusion
 RetailPulse enables stakeholders to gain actionable insights into sales performance, optimize product strategies, and improve overall profitability using interactive visual analytics.
 
