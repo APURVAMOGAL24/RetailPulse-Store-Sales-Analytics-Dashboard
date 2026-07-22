@@ -70,10 +70,11 @@ This project helps to:
 ---
 
 ## 🚀 How to Use
-1. Clone or download this repository  
-2. Open the `.pbip` file in Power BI Desktop  
-3. Ensure `Report` and `SemanticModel` folders are present  
-4. Refresh data if needed  
+
+1. Download the `.pbix` file from this repository
+2. Open it using Microsoft Power BI Desktop
+3. If prompted, update the data source path
+4. Refresh the data to view the latest insights
 
 ---
 
