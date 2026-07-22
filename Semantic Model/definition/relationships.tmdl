@@ -1,0 +1,17 @@
+relationship 27034305-23f2-46da-830b-ff92c3f603cf
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Fact.'Date (dd/mm/yyyy)'
+	toColumn: LocalDateTable_03ff9ca3-2ddc-4aa9-b91a-c695916227e8.Date
+
+relationship 5964f70d-8881-1e55-3324-59ff05a8f4e1
+	fromColumn: Fact.CustomerID
+	toColumn: 'Dim Customers'.'Customer ID'
+
+relationship 3ff8762e-0496-5b21-f987-be2f460776b2
+	fromColumn: Fact.PromotionID
+	toColumn: 'Dim Promotion'.PromotionID
+
+relationship 3872707d-612e-4637-3e1a-29cdf32c85ab
+	fromColumn: Fact.'Product ID'
+	toColumn: 'Dim Product'.ProductID
+

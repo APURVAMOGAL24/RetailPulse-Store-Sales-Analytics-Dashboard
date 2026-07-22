@@ -1,0 +1,158 @@
+table Fact
+	lineageTag: 1fc36dcf-a4d4-4a71-96d7-0532b32bd43d
+
+	column 'Date (dd/mm/yyyy)'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 46195d00-7dd2-4855-8384-2248afcf0460
+		summarizeBy: none
+		sourceColumn: Date (dd/mm/yyyy)
+
+		variation Variation
+			isDefault
+			relationship: 27034305-23f2-46da-830b-ff92c3f603cf
+			defaultHierarchy: LocalDateTable_03ff9ca3-2ddc-4aa9-b91a-c695916227e8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column CustomerID
+		dataType: string
+		lineageTag: 0594d604-1d2e-4805-8ecb-afd894301730
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column PromotionID
+		dataType: string
+		lineageTag: 9df49620-fe6e-4cfc-9c4a-5aa78219965b
+		summarizeBy: none
+		sourceColumn: PromotionID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product ID'
+		dataType: string
+		lineageTag: 73dd8c6d-a2d9-4acb-a32f-83283477e1c0
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Units Sold'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e20fed5-af6c-41b4-afe1-135eb92bb393
+		summarizeBy: sum
+		sourceColumn: Units Sold
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Price Per Unit (INR)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3dd9b1eb-8f1b-4f05-aa44-17faba02bc2d
+		summarizeBy: sum
+		sourceColumn: Price Per Unit (INR)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Total Sales'
+		dataType: int64
+		formatString: 0
+		lineageTag: 83f4e503-1d83-4a55-a8ad-a85c9c57a591
+		summarizeBy: sum
+		sourceColumn: Total Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	column Percentage
+		dataType: double
+		lineageTag: 5ba4d5be-2217-4f5e-b632-766f853ae601
+		summarizeBy: sum
+		sourceColumn: Percentage
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Discount
+		dataType: double
+		formatString: 0
+		lineageTag: 91a1eb54-5e2d-4dda-aac3-d2d86b9835ca
+		summarizeBy: sum
+		sourceColumn: Discount
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Net Sales'
+		dataType: double
+		formatString: 0
+		lineageTag: a917bf0b-31de-418d-8cdb-8ebc9fa12415
+		summarizeBy: sum
+		sourceColumn: Net Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	column Profit
+		dataType: double
+		lineageTag: b2606809-2137-4e7d-a9a9-ee16becd2cfb
+		summarizeBy: sum
+		sourceColumn: Profit
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Index
+		dataType: string
+		lineageTag: 3f18da08-cae8-44ee-970f-7243a0a4fe2d
+		summarizeBy: none
+		sourceColumn: Index
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\LAPTOP HUB\Downloads\DA\PBI PRACTICE\P1+Store+Data.xlsx"), null, true),
+				    Sheet3_Sheet = Source{[Item="Sheet3",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet3_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date (dd/mm/yyyy)", type date}, {"CustomerID", Int64.Type}, {"PromotionID", type any}, {"Product ID", type text}, {"Units Sold", Int64.Type}, {"Price Per Unit", type any}, {"Total Sales", type any}, {"Discount Percentage", type any}, {"Discount Value", type any}, {"Net Sales", type any}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Net Sales"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Columns",{{"CustomerID", type text}, {"Date (dd/mm/yyyy)", type date}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type1", {"Product ID"}, #"Dim Product", {"ProductID"}, "Dim Product", JoinKind.LeftOuter),
+				    #"Expanded Dim Product" = Table.ExpandTableColumn(#"Merged Queries", "Dim Product", {"Price (INR)"}, {"Dim Product.Price (INR)"}),
+				    #"Removed Columns1" = Table.RemoveColumns(#"Expanded Dim Product",{"Price Per Unit"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Columns1",{{"Dim Product.Price (INR)", "Price Per Unit (INR)"}}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Renamed Columns",{"Date (dd/mm/yyyy)", "CustomerID", "PromotionID", "Product ID", "Units Sold", "Price Per Unit (INR)", "Total Sales", "Discount Percentage", "Discount Value"}),
+				    #"Added Custom" = Table.AddColumn(#"Reordered Columns", "Total sales.1", each [Units Sold]*[#"Price Per Unit (INR)"]),
+				    #"Removed Columns2" = Table.RemoveColumns(#"Added Custom",{"Total Sales"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Removed Columns2",{{"Total sales.1", "Total sales"}}),
+				    #"Reordered Columns1" = Table.ReorderColumns(#"Renamed Columns1",{"Date (dd/mm/yyyy)", "CustomerID", "PromotionID", "Product ID", "Units Sold", "Price Per Unit (INR)", "Total sales", "Discount Percentage", "Discount Value"}),
+				    #"Renamed Columns2" = Table.RenameColumns(#"Reordered Columns1",{{"Total sales", "Total Sales"}}),
+				    #"Merged Queries1" = Table.NestedJoin(#"Renamed Columns2", {"PromotionID"}, #"Dim Promotion", {"PromotionID"}, "Dim Promotion", JoinKind.LeftOuter),
+				    #"Removed Columns3" = Table.RemoveColumns(#"Merged Queries1",{"Discount Percentage"}),
+				    #"Expanded Dim Promotion" = Table.ExpandTableColumn(#"Removed Columns3", "Dim Promotion", {"Percentage"}, {"Dim Promotion.Percentage"}),
+				    #"Reordered Columns2" = Table.ReorderColumns(#"Expanded Dim Promotion",{"Date (dd/mm/yyyy)", "CustomerID", "PromotionID", "Product ID", "Units Sold", "Price Per Unit (INR)", "Total Sales", "Dim Promotion.Percentage", "Discount Value"}),
+				    #"Renamed Columns3" = Table.RenameColumns(#"Reordered Columns2",{{"Dim Promotion.Percentage", "Percentage"}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Renamed Columns3",null,0,Replacer.ReplaceValue,{"Percentage"}),
+				    #"Added Custom1" = Table.AddColumn(#"Replaced Value", "Discount", each ([Total Sales]*[Percentage])/100),
+				    #"Removed Columns4" = Table.RemoveColumns(#"Added Custom1",{"Discount Value"}),
+				    #"Added Custom2" = Table.AddColumn(#"Removed Columns4", "Net Sales", each [Total Sales]-[Discount]),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Added Custom2",{{"Net Sales", type number}, {"Discount", type number}, {"Total Sales", Int64.Type}}),
+				    #"Added Custom3" = Table.AddColumn(#"Changed Type2", "Profit", each 0.1*[Net Sales]),
+				    #"Changed Type3" = Table.TransformColumnTypes(#"Added Custom3",{{"Profit", type number}}),
+				    #"Added Index" = Table.AddIndexColumn(#"Changed Type3", "Index", 1, 1, Int64.Type),
+				    #"Reordered Columns3" = Table.ReorderColumns(#"Added Index",{"Index", "Date (dd/mm/yyyy)", "CustomerID", "PromotionID", "Product ID", "Units Sold", "Price Per Unit (INR)", "Total Sales", "Percentage", "Discount", "Net Sales", "Profit"}),
+				    #"Changed Type4" = Table.TransformColumnTypes(#"Reordered Columns3",{{"Index", type text}})
+				in
+				    #"Changed Type4"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

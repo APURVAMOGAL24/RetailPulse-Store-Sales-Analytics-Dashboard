@@ -1,0 +1,76 @@
+table 'Dim Customers'
+	lineageTag: 18b80d98-6c85-4131-8098-0f7eecdfeb73
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: dca7a9bd-f3d6-4ad7-a319-8c9f31fceac7
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: a50e297d-f0a8-4c31-a068-0baad89248e5
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: efec577b-ae7b-4656-9106-9c38de92226c
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: f10d22b4-10dd-4c63-b7b1-1a73dae343d3
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pincode
+		dataType: int64
+		formatString: 0
+		lineageTag: 3b5d11e5-1834-4b5e-8dbc-b288a67ac6f8
+		summarizeBy: none
+		sourceColumn: Pincode
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmailID
+		dataType: string
+		lineageTag: 30cac38a-486c-420a-94df-bf8b07f29e55
+		summarizeBy: none
+		sourceColumn: EmailID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Phone Number'
+		dataType: int64
+		formatString: 0
+		lineageTag: d1524c12-9931-432e-99c0-150d209a946f
+		summarizeBy: none
+		sourceColumn: Phone Number
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Customers' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\LAPTOP HUB\Downloads\DA\PBI PRACTICE\P1+Store+Data.xlsx"), null, true),
+				    #"Dim Customers_Sheet" = Source{[Item="Dim Customers",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Dim Customers_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Customer ID", type text}, {"Customer Name", type text}, {"City", type text}, {"State", type text}, {"Pincode", Int64.Type}, {"EmailID", type text}, {"Phone Number", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+
