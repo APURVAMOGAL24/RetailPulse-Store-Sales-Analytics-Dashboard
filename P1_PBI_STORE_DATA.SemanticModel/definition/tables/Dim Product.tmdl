@@ -1,0 +1,49 @@
+table 'Dim Product'
+	lineageTag: 0f830ece-2ed7-46f5-81ba-6923f45a146d
+
+	column ProductID
+		dataType: string
+		lineageTag: 88e3106b-7a12-4772-998a-d72ebacf2b4a
+		summarizeBy: none
+		sourceColumn: ProductID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Name'
+		dataType: string
+		lineageTag: f635e155-62f8-4488-94a0-692c62f41f08
+		summarizeBy: none
+		sourceColumn: Product Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Line'
+		dataType: string
+		lineageTag: 2db38f03-f9c5-4ff2-8e8d-8ce6cddb06b6
+		summarizeBy: none
+		sourceColumn: Product Line
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Price (INR)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 48eff28e-2870-40d3-908a-293a2632b6ae
+		summarizeBy: none
+		sourceColumn: Price (INR)
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Product' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\LAPTOP HUB\Downloads\DA\PBI PRACTICE\P1+Store+Data.xlsx"), null, true),
+				    #"Dim Product_Sheet" = Source{[Item="Dim Product",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Dim Product_Sheet", [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductID", type text}, {"Product Name", type text}, {"Product Line", type text}, {"Price (INR)", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_ResultType = Table
+
